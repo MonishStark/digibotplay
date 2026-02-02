@@ -1,0 +1,29 @@
+## Dependencies
+node_modules/
+
+## Environment / secrets
+.env
+backend/.env
+frontend/.env
+
+## Runtime data (avoid committing user/generated content)
+documents/
+backend/documents/
+backend/uploads/
+backend/avatars/
+backend/logs/
+backend/tempCsv/
+backend/tempImages/
+backend/tempText/
+
+## Frontend build output
+frontend/dist/
+
+## Test artifacts
+e2e/playwright-report/
+e2e/test-results/
+
+## OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
