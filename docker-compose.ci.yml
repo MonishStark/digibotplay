@@ -101,6 +101,11 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-ci_dummy_client_id}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-ci_dummy_client_secret}
 
+      # Microsoft/Azure AD OAuth (dummy values for CI if not provided)
+      MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID:-ci_dummy_microsoft_client_id}
+      MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET:-ci_dummy_microsoft_client_secret}
+      MICROSOFT_TENANT_ID: ${MICROSOFT_TENANT_ID:-ci_dummy_microsoft_tenant_id}
+
       # Security
       TOKEN_SECRET: ci_test_secret_key_12345
       ACCESS_TOKEN_SECRET: ci_test_access_token_secret_67890
