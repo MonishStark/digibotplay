@@ -63,7 +63,7 @@ jobs:
       - name: Initialize Database Schema
         run: |
           mysql -h 127.0.0.1 -u root -ptest_root_password team_ai < sql/ddl.sql
-          mysql -h 127.0.0.1 -u root -ptest_root_password team_ai < sql/dml.sql
+          mysql -h 127.0.0.1 -u root -ptest_root_password team_ai < sql/dml-roles.sql
           mysql -h 127.0.0.1 -u root -ptest_root_password team_ai < sql/seed-test-users.sql
 
       - name: Start Backend Server
