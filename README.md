@@ -10,6 +10,8 @@ DigiBot: The Multimodal Semantic Architect A unified, end-to-end generative AI a
 🐳 **Docker-based CI/CD**  
 ⚡ **GitHub Actions automation**
 
+_PR trigger: smoke tests run v8._
+
 _PR trigger: smoke tests run v7._
 
 _PR trigger: smoke tests run v6._
