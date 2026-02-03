@@ -1,0 +1,130 @@
+# @format
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: digibot-mysql-ci
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: test_root_password
+      MYSQL_DATABASE: team_ai
+      MYSQL_USER: test_user
+      MYSQL_PASSWORD: test_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./sql/ddl.sql:/docker-entrypoint-initdb.d/01-ddl.sql
+      - ./sql/ddl-missing-tables.sql:/docker-entrypoint-initdb.d/02-ddl-missing-tables.sql
+      - ./sql/dml-roles.sql:/docker-entrypoint-initdb.d/03-dml-roles.sql
+      - ./sql/seed-test-users.sql:/docker-entrypoint-initdb.d/04-seed-test-users.sql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-ptest_root_password",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - digibot-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: digibot-redis-ci
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - digibot-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.ci
+    container_name: digibot-backend-ci
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Application
+      APPLICATION_NAME: DigiBot
+      APPLICATION_TAGLINE: Unleashing Insights from Digital Assets!
+      APPLICATION_BOTNAME: DigiBot
+      FRONTEND_BASE_URL: http://localhost:3011
+      BACKEND_URL: http://localhost:5050
+      USER_PROFILE_IMAGE_URL: http://localhost:5050/user-avatars
+      COMPANY_LOGO_URL: http://localhost:5050/company-logos
+      PORT: 5050
+
+      # Database
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER_NAME: test_user
+      DATABASE_PASSWORD: test_password
+      DATABASE_NAME: team_ai
+
+      # Node
+      NODE_ENV: test
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+      # BigQuery - Will be passed from GitHub Secrets
+      GOOGLE_PROJECT_ID: ${GOOGLE_PROJECT_ID}
+      BIGQUERY_DATASET_ID: ${BIGQUERY_DATASET_ID}
+      BIGQUERY_TABLE: ${BIGQUERY_TABLE}
+      BIGQUERY_CONNECTION_ID: ${BIGQUERY_CONNECTION_ID}
+      BIGQUERY_AI_MODEL_ID: ${BIGQUERY_AI_MODEL_ID}
+      BIGQUERY_MAX_OUTPUT_TOKEN: ${BIGQUERY_MAX_OUTPUT_TOKEN}
+      BIGQUERY_LOCATION: ${BIGQUERY_LOCATION}
+      UUID_NAMESPACE: ${UUID_NAMESPACE}
+
+      # Security
+      TOKEN_SECRET: ci_test_secret_key_12345
+      ACCESS_TOKEN_SECRET: ci_test_access_token_secret_67890
+      REFRESH_TOKEN_SECRET: ci_test_refresh_token_secret_abcde
+      SALT_ROUND: 10
+
+      # Mock AI for CI
+      MOCK_AI_SERVICES: "true"
+
+      # Paths
+      BACKEND_PATH: /app
+      DOCUMENT_PATH: /app/documents
+      TMP_CSV_PATH: /app/tempCsv
+      TMP_IMAGE_PATH: /app/tempImages
+      TMP_TXT_PATH: /app/tempText
+      LOG_FILE_PATH: /app/logs/combined.log
+
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5050/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - digibot-network
+
+networks:
+  digibot-network:
+    driver: bridge
+    name: digibot-network

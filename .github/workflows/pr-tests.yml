@@ -1,0 +1,331 @@
+# @format
+
+name: "DigiBot: PR Smoke Tests"
+
+# This workflow runs ALL comprehensive smoke tests (87 files, ~1,307 tests)
+# covering all API endpoints whenever a PR is opened/updated.
+# Tests are executed sequentially (--workers=1) for stability.
+# Excludes deprecated tests in _deprecated folder.
+
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+  actions: read
+
+jobs:
+  smoke-tests:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    env:
+      PASSED: "0"
+      FAILED: "0"
+      TOTAL: "0"
+      REPORT_AVAILABLE: "false"
+      REPORT_SECTION: ""
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # =======================
+      # START DOCKER SERVICES
+      # =======================
+      - name: Create Environment File
+        run: |
+          cat > .env << EOF
+          GOOGLE_PROJECT_ID=${{ secrets.GOOGLE_PROJECT_ID }}
+          BIGQUERY_DATASET_ID=${{ secrets.BIGQUERY_DATASET_ID }}
+          BIGQUERY_TABLE=${{ secrets.BIGQUERY_TABLE }}
+          BIGQUERY_CONNECTION_ID=${{ secrets.BIGQUERY_CONNECTION_ID }}
+          BIGQUERY_AI_MODEL_ID=${{ secrets.BIGQUERY_AI_MODEL_ID }}
+          BIGQUERY_MAX_OUTPUT_TOKEN=${{ secrets.BIGQUERY_MAX_OUTPUT_TOKEN }}
+          BIGQUERY_LOCATION=${{ secrets.BIGQUERY_LOCATION }}
+          UUID_NAMESPACE=${{ secrets.UUID_NAMESPACE }}
+          EOF
+
+      - name: Start Docker Services (MySQL + Redis + Backend)
+        run: |
+          docker compose -f docker-compose.ci.yml up -d
+          echo "✅ Docker services started"
+
+      - name: Wait for Services to be Healthy
+        run: |
+          echo "⏳ Waiting for MySQL to be ready..."
+          timeout 120 bash -c 'until docker exec digibot-mysql-ci mysqladmin ping -h localhost -u root -ptest_root_password &>/dev/null; do sleep 2; done'
+          echo "✅ MySQL is ready"
+
+          echo "⏳ Waiting for Redis to be ready..."
+          timeout 60 bash -c 'until docker exec digibot-redis-ci redis-cli ping &>/dev/null; do sleep 2; done'
+          echo "✅ Redis is ready"
+
+          echo "⏳ Waiting for Backend to be ready..."
+          timeout 180 bash -c 'until curl -f http://localhost:5050/health &>/dev/null; do sleep 3; done'
+          echo "✅ Backend is ready"
+
+      - name: Verify Database Setup
+        run: |
+          echo "🔍 Verifying test users..."
+          docker exec digibot-mysql-ci mysql -u test_user -ptest_password team_ai \
+            -e "SELECT COUNT(*) as user_count FROM users;" \
+            -e "SELECT email, role FROM users;"
+
+      # =======================
+      # INSTALL & RUN TESTS
+      # =======================
+      - name: Install E2E Dependencies
+        working-directory: ./e2e
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: ./e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright Smoke Tests
+        id: run_tests
+        continue-on-error: true
+        working-directory: ./e2e
+        run: |
+          set +e
+          npx playwright test tests/smoke/*_comprehensive.spec.ts --reporter=html,json --workers=1
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit $code
+        env:
+          CI: true
+
+      # =======================
+      # COLLECT LOGS ON FAILURE
+      # =======================
+      - name: Collect Docker Logs on Failure
+        if: failure()
+        run: |
+          echo "📋 Backend Logs:"
+          docker logs digibot-backend-ci --tail 100
+
+          echo "📋 MySQL Logs:"
+          docker logs digibot-mysql-ci --tail 50
+
+      # =======================
+      # MOVE REPORTS
+      # =======================
+      - name: Move Reports to Root
+        if: always()
+        working-directory: ./e2e
+        run: |
+          if [ -d "playwright-report" ]; then
+            mv playwright-report ../
+            echo "✅ Moved HTML Report"
+          fi
+
+          if [ -f "results.json" ]; then
+            mv results.json ../
+            echo "✅ Moved JSON Results"
+          fi
+
+      - name: Detect Report Availability
+        if: always()
+        run: |
+          if [ -d "playwright-report" ] && [ -f "playwright-report/index.html" ]; then
+            echo "REPORT_AVAILABLE=true" >> "$GITHUB_ENV"
+          else
+            echo "REPORT_AVAILABLE=false" >> "$GITHUB_ENV"
+          fi
+
+      # =======================
+      # CALCULATE STATS
+      # =======================
+      - name: Calculate Test Stats
+        if: always()
+        run: |
+          node -e "
+            try {
+              const fs = require('fs');
+              if (fs.existsSync('./results.json')) {
+                const r = require('./results.json');
+                const passed = r.stats.expected + r.stats.flaky;
+                const failed = r.stats.unexpected;
+                const skipped = r.stats.skipped || 0;
+                console.log('PASSED=' + passed);
+                console.log('FAILED=' + failed);
+                console.log('SKIPPED=' + skipped);
+                console.log('TOTAL=' + (passed + failed + skipped));
+              } else {
+                console.log('PASSED=0');
+                console.log('FAILED=Error');
+                console.log('SKIPPED=0');
+                console.log('TOTAL=0');
+              }
+            } catch (e) {
+              console.log('PASSED=0');
+              console.log('FAILED=Crash');
+              console.log('SKIPPED=0');
+              console.log('TOTAL=0');
+            }
+          " >> $GITHUB_ENV
+
+      # =======================
+      # GOOGLE DRIVE UPLOAD
+      # =======================
+      - name: Zip Playwright Report
+        if: always() && env.REPORT_AVAILABLE == 'true'
+        run: |
+          sudo apt-get update >/dev/null
+          sudo apt-get install -y zip >/dev/null
+          zip -r playwright-report.zip playwright-report
+
+      - name: Upload Report to Google Drive
+        if: always() && env.REPORT_AVAILABLE == 'true'
+        env:
+          GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+          GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+          GDRIVE_REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
+          REPORT_ZIP: playwright-report.zip
+          REPORT_NAME_PREFIX: digibot-pr-${{ github.event.pull_request.number }}
+        run: |
+          node scripts/uploadToDrive.js >> $GITHUB_ENV
+
+      - name: Prepare Report Message
+        if: always()
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          {
+            echo "REPORT_SECTION<<EOF"
+
+            if [ "${REPORT_AVAILABLE}" = "true" ] && [ -n "${REPORT_LINK:-}" ]; then
+              echo "📂 **DOWNLOAD FULL REPORT:**"
+              echo "${REPORT_LINK}"
+            else
+              echo "⚠️ **ISSUE SUMMARY:**"
+
+              if [ "${{ steps.run_tests.outcome }}" != "success" ]; then
+                echo "- Tests failed (exit code: ${{ steps.run_tests.outputs.exit_code }})"
+              else
+                echo "- Tests step outcome: ${{ steps.run_tests.outcome }}"
+              fi
+
+              if [ "${REPORT_AVAILABLE}" != "true" ]; then
+                echo "- Report not generated (playwright-report missing)"
+              else
+                echo "- Report generated but Drive upload failed"
+              fi
+
+              echo ""
+              echo "📋 Run logs: $RUN_URL"
+            fi
+
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
+      # =======================
+      # PR COMMENT
+      # =======================
+      - name: Comment PR with Test Results
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const passed = process.env.PASSED;
+            const failed = process.env.FAILED;
+            const skipped = process.env.SKIPPED || '0';
+            const total = process.env.TOTAL;
+            const reportSection = process.env.REPORT_SECTION;
+
+            const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : '0';
+            const status = failed === '0' || failed === 0 ? '✅ PASSED' : '❌ FAILED';
+            const emoji = failed === '0' || failed === 0 ? '🎉' : '⚠️';
+
+            const body = `## ${emoji} DigiBot Smoke Test Results ${emoji}
+
+            **Status:** ${status}
+            **Pass Rate:** ${passRate}%
+
+            ### 📊 Test Summary
+            | Metric | Count |
+            |--------|-------|
+            | ✅ Passed | ${passed} |
+            | ❌ Failed | ${failed} |
+            | ⏭️ Skipped | ${skipped} |
+            | 📝 Total | ${total} |
+
+            ### 📂 Test Report
+            ${reportSection}
+
+            ---
+            *Automated test run for PR #${{ github.event.pull_request.number }}*
+            *Commit: \`${{ github.event.pull_request.head.sha }}\`*
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      # =======================
+      # EMAIL NOTIFICATION
+      # =======================
+      - name: Send Email Notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: premium49.web-hosting.com
+          server_port: 465
+          username: ${{ secrets.REPORT_FROM_MAIL }}
+          password: ${{ secrets.REPORT_FROM_PASSWORD }}
+          subject: "DigiBot PR #${{ github.event.pull_request.number }} - Smoke Tests: ${{ env.PASSED }}/${{ env.TOTAL }} Passed"
+          body: |
+            DigiBot – Smoke Test Results for PR #${{ github.event.pull_request.number }}
+
+            Pull Request: ${{ github.event.pull_request.title }}
+            Author: ${{ github.event.pull_request.user.login }}
+            Branch: ${{ github.event.pull_request.head.ref }}
+
+            SUMMARY:
+            ✅ Passed: ${{ env.PASSED }}
+            ❌ Failed: ${{ env.FAILED }}
+            ⏭️ Skipped: ${{ env.SKIPPED }}
+            📝 Total: ${{ env.TOTAL }}
+
+            ${{ env.REPORT_SECTION }}
+
+            📋 Notes:
+            - Tests executed sequentially with --workers=1 for stability
+            - All 87 comprehensive test suites covering authentication, files, teams, admin, etc.
+            - Backend, MySQL, and Redis services run in Docker containers
+            - Test database seeded with test users automatically
+
+            Pull Request URL: ${{ github.event.pull_request.html_url }}
+
+          to: ${{ secrets.REPORT_TO_MAILS }}
+          from: "DigiBot QA Bot"
+
+      # =======================
+      # CLEANUP
+      # =======================
+      - name: Stop Docker Services
+        if: always()
+        run: |
+          docker compose -f docker-compose.ci.yml down -v
+          echo "✅ Docker services stopped and volumes removed"
+
+      - name: Upload Playwright Report as Artifact
+        if: always() && env.REPORT_AVAILABLE == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-pr-${{ github.event.pull_request.number }}
+          path: playwright-report/
+          retention-days: 30

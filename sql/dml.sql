@@ -1,0 +1,338 @@
+-- phpMyAdmin SQL Dump
+-- version 5.1.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Dec 30, 2023 at 01:10 PM
+-- Server version: 10.4.19-MariaDB
+-- PHP Version: 8.0.6
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+--
+-- Database: `team_ai`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `chat_histories`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `chat_messages`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `teams`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `companies`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `companies_meta`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `notification`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `file_deletions`
+--
+--
+-- Indexes for table `file_deletions`
+--
+--
+-- Indexes for table `notification`
+--
+--
+-- AUTO_INCREMENT for table `file_deletions`
+--
+--
+-- AUTO_INCREMENT for table `file_deletions`
+--
+--
+-- Table structure for table `integrations_files_map`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `documents`
+--
+--
+-- Dumping data for table `documents`
+--
+INSERT INTO `documents` (`id`, `parentId`, `teamId`, `name`, `tooltip`, `isDefault`, `type`, `created`) VALUES
+-- --------------------------------------------------------
+--
+-- Table structure for table `file_embedding`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `invitations`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `usage_statistics`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `file_metadata_retries`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `non-response-identifiers`
+--
+--
+-- Dumping data for table `non-response-identifiers`
+--
+INSERT INTO `non-response-identifiers` (`id`, `identifier`) VALUES
+-- --------------------------------------------------------
+--
+-- Table structure for table `roles`
+--
+--
+-- Dumping data for table `roles`
+--
+INSERT INTO `roles` (`id`, `role`, `created`, `updated`) VALUES
+-- --------------------------------------------------------
+--
+-- Table structure for table `subscription-packages`
+--
+--
+-- Dumping data for table `subscription-packages`
+--
+INSERT INTO `subscription-packages` (`id`, `name`, `priceId`, `currency`, `created`) VALUES
+-- --------------------------------------------------------
+--
+-- Table structure for table `subscriptions`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `summary`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `super-admin-settings`
+--
+--
+-- Dumping data for table `super-admin-settings`
+--
+INSERT INTO `super-admin-settings` (`id`, `meta_key`, `meta_value`, `created`) VALUES
+-- --------------------------------------------------------
+--
+-- Table structure for table `users_integrations`
+--
+-- --------------------------------------------------------
+--
+-- Indexes for table `user_integrations`
+--
+--
+-- AUTO_INCREMENT for table `user_integrations`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `recordings`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `tokens_used`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `users`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `email_templates`
+--
+--
+-- Dumping data for table `email_templates`
+--
+INSERT INTO `email_templates` (`id`, `name`, `subject`, `template`, `created`) VALUES
+-- --------------------------------------------------------
+--
+-- Table structure for table `chat_scope`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `shared_teams`
+--
+--
+-- Indexes for dumped tables
+--
+--
+-- Indexes for table `email_templates`
+--
+COMMIT;
+-- --------------------------------------------------------
+--
+-- Table structure for table `users_meta`
+--
+-- --------------------------------------------------------
+--
+-- Table structure for table `user_company_role_relationship`
+--
+--
+-- Indexes for table `chat_histories`
+--
+--
+-- Indexes for table `chat_messages`
+--
+--
+-- Indexes for table `teams`
+--
+--
+-- Indexes for table `companies`
+--
+--
+-- Indexes for table `companies_meta`
+--
+--
+-- Indexes for table `documents`
+--
+--
+-- Indexes for table `invitations`
+--
+--
+-- Indexes for table `usage_statistics`
+--
+--
+-- Indexes for table `non-response-identifiers`
+--
+--
+-- Indexes for table `roles`
+--
+--
+-- Indexes for table `subscription-packages`
+--
+--
+-- Indexes for table `subscriptions`
+--
+--
+-- Indexes for table `summary`
+--
+--
+-- Indexes for table `super-admin-settings`
+--
+--
+-- Indexes for table `tokens_used`
+--
+--
+-- Indexes for table `users`
+--
+--
+-- Indexes for table `users_meta`
+--
+--
+-- Indexes for table `user_company_role_relationship`
+--
+--
+-- Indexes for table `recordings`
+--
+-- AUTO_INCREMENT for table `recordings`
+--
+--
+-- AUTO_INCREMENT for dumped tables
+--
+--
+-- AUTO_INCREMENT for table `chat_histories`
+--
+--
+-- AUTO_INCREMENT for table `chat_messages`
+--
+--
+-- AUTO_INCREMENT for table `teams`
+--
+--
+-- AUTO_INCREMENT for table `companies`
+--
+--
+-- AUTO_INCREMENT for table `companies_meta`
+--
+--
+-- AUTO_INCREMENT for table `documents`
+--
+--
+-- AUTO_INCREMENT for table `file_embedding`
+--
+--
+-- AUTO_INCREMENT for table `invitations`
+--
+--
+-- AUTO_INCREMENT for table `non-response-identifiers`
+--
+--
+-- AUTO_INCREMENT for table `roles`
+--
+--
+-- AUTO_INCREMENT for table `subscription-packages`
+--
+--
+-- AUTO_INCREMENT for table `subscriptions`
+--
+--
+-- AUTO_INCREMENT for table `summary`
+--
+COMMIT;
+--
+-- AUTO_INCREMENT for table `super-admin-settings`
+--
+--
+-- AUTO_INCREMENT for table `tokens_used`
+--
+COMMIT;
+--
+-- AUTO_INCREMENT for table `users`
+--
+--
+-- AUTO_INCREMENT for table `users_meta`
+--
+--
+-- AUTO_INCREMENT for table `user_company_role_relationship`
+--
+--
+-- Constraints for dumped tables
+--
+--
+-- Constraints for table `chat_histories`
+--
+--
+-- Constraints for table `chat_messages`
+--
+--
+-- Constraints for table `teams`
+--
+--
+-- Constraints for table `companies`
+--
+--
+-- Constraints for table `companies_meta`
+--
+--
+-- Constraints for table `documents`
+--
+--
+-- Constraints for table `invitations`
+--
+--
+-- AUTO_INCREMENT for table `usage_statistics`
+--
+COMMIT;
+--
+-- Constraints for table `subscriptions`
+--
+--
+-- Constraints for table `users_meta`
+--
+--
+-- Constraints for table `user_company_role_relationship`
+--
+COMMIT;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
