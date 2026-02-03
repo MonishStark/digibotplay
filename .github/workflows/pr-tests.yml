@@ -54,6 +54,8 @@ jobs:
           BIGQUERY_LOCATION=${{ secrets.BIGQUERY_LOCATION }}
           UUID_NAMESPACE=${{ secrets.UUID_NAMESPACE }}
           STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY || 'sk_test_ci_dummy' }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID || 'ci_dummy_client_id' }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET || 'ci_dummy_client_secret' }}
           EOF
 
       - name: Start Docker Services (MySQL + Redis + Backend)
