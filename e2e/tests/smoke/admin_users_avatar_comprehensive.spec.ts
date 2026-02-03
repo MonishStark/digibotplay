@@ -23,8 +23,8 @@ test.describe("PUT /admin/users/{userId}/profile/avatar - Comprehensive Tests", 
 		// Login to get admin access token
 		const loginResponse = await request.post(`${API_BASE_URL}/auth/login`, {
 			data: {
-				email: "poised.reindeer.muxl@protectsmail.net",
-				password: "Qwerty@123",
+				email: testData.users.admin1.email,
+				password: testData.users.admin1.password,
 			},
 		});
 		const loginData = await loginResponse.json();

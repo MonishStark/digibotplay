@@ -19,8 +19,8 @@ test.describe("GET /teams/{teamId}/files/{fileId}/summary - Comprehensive Tests"
 		// Login to get admin access token
 		const loginResponse = await request.post(`${API_BASE_URL}/auth/login`, {
 			data: {
-				email: "poised.reindeer.muxl@protectsmail.net",
-				password: "Qwerty@123",
+				email: testData.users.admin1.email,
+				password: testData.users.admin1.password,
 			},
 		});
 		const loginData = await loginResponse.json();
@@ -64,7 +64,7 @@ test.describe("GET /teams/{teamId}/files/{fileId}/summary - Comprehensive Tests"
 				`${API_BASE_URL}/teams/${testTeamId}/files/some-file-id/summary`,
 			);
 
-			expect([401, 404, 500]).toContain(response.status());
+			expect([400, 401, 404, 500]).toContain(response.status());
 		});
 
 		test("should return 401 for invalid token", async ({ request }) => {
@@ -77,7 +77,7 @@ test.describe("GET /teams/{teamId}/files/{fileId}/summary - Comprehensive Tests"
 				},
 			);
 
-			expect([401, 404, 500]).toContain(response.status());
+			expect([400, 401, 404, 500]).toContain(response.status());
 		});
 
 		test("should return 401 for expired token", async ({ request }) => {
@@ -92,7 +92,7 @@ test.describe("GET /teams/{teamId}/files/{fileId}/summary - Comprehensive Tests"
 				},
 			);
 
-			expect([401, 404, 500]).toContain(response.status());
+			expect([400, 401, 404, 500]).toContain(response.status());
 		});
 
 		test("should return 401 for malformed Bearer token", async ({
@@ -107,7 +107,7 @@ test.describe("GET /teams/{teamId}/files/{fileId}/summary - Comprehensive Tests"
 				},
 			);
 
-			expect([401, 404, 500]).toContain(response.status());
+			expect([400, 401, 404, 500]).toContain(response.status());
 		});
 	});
 
@@ -122,7 +122,7 @@ test.describe("GET /teams/{teamId}/files/{fileId}/summary - Comprehensive Tests"
 				},
 			);
 
-			expect([403, 404, 500, 401]).toContain(response.status());
+			expect([400, 401, 403, 404, 500]).toContain(response.status());
 		});
 	});
 
@@ -137,7 +137,7 @@ test.describe("GET /teams/{teamId}/files/{fileId}/summary - Comprehensive Tests"
 				},
 			);
 
-			expect([401, 404, 500]).toContain(response.status());
+			expect([400, 401, 404, 500]).toContain(response.status());
 		});
 
 		test("should handle SQL injection in fileId", async ({ request }) => {

@@ -1,21 +1,22 @@
 # @format
-version: "3.8"
 
 services:
   mysql:
     image: mysql:8.0
     container_name: digibot-mysql-ci
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: test_root_password
       MYSQL_DATABASE: team_ai
       MYSQL_USER: test_user
       MYSQL_PASSWORD: test_password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - ./sql/ddl.sql:/docker-entrypoint-initdb.d/01-ddl.sql
-      - ./sql/dml.sql:/docker-entrypoint-initdb.d/02-dml.sql
-      - ./sql/seed-test-users.sql:/docker-entrypoint-initdb.d/03-seed-test-users.sql
+      - ./sql/ddl-missing-tables.sql:/docker-entrypoint-initdb.d/02-ddl-missing-tables.sql
+      - ./sql/dml-roles.sql:/docker-entrypoint-initdb.d/03-dml-roles.sql
+      - ./sql/seed-test-users.sql:/docker-entrypoint-initdb.d/04-seed-test-users.sql
     healthcheck:
       test:
         [
@@ -30,7 +31,8 @@ services:
         ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
     networks:
       - digibot-network
 
@@ -75,6 +77,9 @@ services:
       DATABASE_PASSWORD: test_password
       DATABASE_NAME: team_ai
 
+      # Node
+      NODE_ENV: test
+
       # Redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -91,6 +96,8 @@ services:
 
       # Security
       TOKEN_SECRET: ci_test_secret_key_12345
+      ACCESS_TOKEN_SECRET: ci_test_access_token_secret_67890
+      REFRESH_TOKEN_SECRET: ci_test_refresh_token_secret_abcde
       SALT_ROUND: 10
 
       # Mock AI for CI
@@ -120,3 +127,4 @@ services:
 networks:
   digibot-network:
     driver: bridge
+    name: digibot-network

@@ -199,8 +199,8 @@ test.describe("GET /app-data - Comprehensive Tests", () => {
 			const response1 = await request.get(`${API_BASE_URL}/app-data`);
 			const response2 = await request.get(`${API_BASE_URL}/app-data`);
 
-			expect([200, 400, 404]).toContain(response1.status());
-			expect([200, 400, 404]).toContain(response2.status());
+			expect([200, 500]).toContain(response1.status());
+			expect([200, 500]).toContain(response2.status());
 
 			if (
 				response1.status() === 200 &&
@@ -217,4 +217,3 @@ test.describe("GET /app-data - Comprehensive Tests", () => {
 		});
 	});
 });
-

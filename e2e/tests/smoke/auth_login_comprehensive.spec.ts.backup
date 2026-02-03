@@ -137,13 +137,7 @@ test.describe("POST /auth/login - Comprehensive Tests", () => {
 				expect([200, 401, 403, 500]).toContain(profileResponse.status());
 			}
 		}
-	});
-});
-
-// ========================
-// BAD REQUEST (400)
-// ========================
-
+	// ========================
 	test.describe("400 Bad Request Responses", () => {
 		test("should return 400 when loginType is missing", async ({ request }) => {
 			const response = await request.post(`${API_BASE_URL}/auth/login`, {
