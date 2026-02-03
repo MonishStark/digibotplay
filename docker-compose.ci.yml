@@ -107,8 +107,8 @@ services:
       MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID:-ci_dummy_microsoft_client_id}
       MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET:-ci_dummy_microsoft_client_secret}
       MICROSOFT_TENANT_ID: ${MICROSOFT_TENANT_ID:-ci_dummy_microsoft_tenant_id}
-      MICROSOFT_OAUTH_REDIRECT_URL: ${MICROSOFT_OAUTH_REDIRECT_URL:-http://localhost:5050/auth/providers/microsoft/callback}
-      MICROSOFT_OAUTH_MOBILE_REDIRECT_URL: ${MICROSOFT_OAUTH_MOBILE_REDIRECT_URL:-http://localhost:5050/auth/providers/microsoft/callback}
+      MICROSOFT_OAUTH_REDIRECT_URL: http://localhost:5050/auth/providers/microsoft/callback
+      MICROSOFT_OAUTH_MOBILE_REDIRECT_URL: http://localhost:5050/auth/providers/microsoft/callback
 
       # Security
       TOKEN_SECRET: ci_test_secret_key_12345
