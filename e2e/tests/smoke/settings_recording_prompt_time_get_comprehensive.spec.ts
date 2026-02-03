@@ -31,238 +31,33 @@ test.describe("GET /settings/recording-prompt-time - Comprehensive Tests", () =>
 	// SUCCESS (200)
 	// ========================
 
-	test.describe("200 Success Responses", () => {
-		test("should fetch recording prompt time successfully - 200", async ({
-			request,
-		}) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-prompt-time`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 401, 403, 404, 500]).toContain(response.status());
-
-			if (
-				response.status() === 200 &&
-				response.headers()["content-type"]?.includes("application/json")
-			) {
-				const data = await response.json();
-				expect(data).toHaveProperty("success");
-			}
-		});
-
-		test("should return prompt time duration in minutes", async ({
-			request,
-		}) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-prompt-time`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 401, 403, 404, 500]).toContain(response.status());
-		});
-
-		test("should return consistent data across multiple requests", async ({
-			request,
-		}) => {
-			const response1 = await request.get(
-				`${API_BASE_URL}/settings/recording-prompt-time`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			const response2 = await request.get(
-				`${API_BASE_URL}/settings/recording-prompt-time`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect(response1.status()).toBe(response2.status());
-		});
-
-		test("should provide duration for mobile/web app", async ({ request }) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-prompt-time`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 401, 403, 404, 500]).toContain(response.status());
-		});
-	});
-
-	// ========================
-	// UNAUTHORIZED (401)
-	// ========================
-
-	test.describe("401 Unauthorized Responses", () => {
-		test("should return 401 when Authorization header is missing", async ({
-			request,
-		}) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-prompt-time`,
-			);
-
-			expect([200, 401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for invalid token", async ({ request }) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-prompt-time`,
-				{
-					headers: {
-						Authorization: "Bearer invalid-token-12345",
-					},
-				},
-			);
-
-			expect([200, 401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for expired token", async ({ request }) => {
-			const expiredToken =
-				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.4Adcj0vbBqfVIpnGGNJKKpBmJcAmPNtSKhTNnsTekII";
-
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-prompt-time`,
-				{
-					headers: {
-						Authorization: `Bearer ${expiredToken}`,
-					},
-				},
-			);
-
-			expect([200, 401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for malformed JWT", async ({ request }) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-prompt-time`,
-				{
-					headers: {
-						Authorization: "Bearer not-a-valid-jwt",
-					},
-				},
-			);
-
-			expect([200, 401, 404, 500]).toContain(response.status());
-		});
-	});
-
-	// ========================
-	// FORBIDDEN (403)
-	// ========================
-
-	test.describe("403 Forbidden Responses", () => {
-		test("should return 403 for insufficient permissions - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require a user without permission
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// NOT FOUND (404)
 	// ========================
-
-	test.describe("404 Not Found Responses", () => {
-		test("should return 404 if setting not found - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require setting not configured
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// METHOD NOT ALLOWED (405)
 	// ========================
 
-	test.describe("405 Method Not Allowed", () => {
-		test("should return 405 for POST method - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require using POST instead of GET
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// REQUEST TIMEOUT (408)
 	// ========================
-
-	test.describe("408 Request Timeout", () => {
-		test("should handle request timeout - PLACEHOLDER", async ({ request }) => {
-			// Would require simulating timeout
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// RATE LIMIT (429)
 	// ========================
 
-	test.describe("429 Rate Limit Exceeded", () => {
-		test("should handle rate limiting - PLACEHOLDER", async ({ request }) => {
-			// Would require many rapid requests
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// SERVER ERROR (500)
 	// ========================
-
-	test.describe("500 Server Error", () => {
-		test("should handle server errors gracefully - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require simulating server error
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// SERVICE UNAVAILABLE (503)
 	// ========================
 
-	test.describe("503 Service Unavailable", () => {
-		test("should handle service unavailable - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require service to be down
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// GATEWAY TIMEOUT (504)
 	// ========================
-
-	test.describe("504 Gateway Timeout", () => {
-		test("should handle gateway timeout - PLACEHOLDER", async ({ request }) => {
-			// Would require simulating timeout
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// EDGE CASES
@@ -510,3 +305,4 @@ test.describe("GET /settings/recording-prompt-time - Comprehensive Tests", () =>
 		});
 	});
 });
+

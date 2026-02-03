@@ -2,6 +2,11 @@
 
 name: "DigiBot: PR Smoke Tests"
 
+# This workflow runs ALL comprehensive smoke tests (87 files, ~1,307 tests)
+# covering all API endpoints whenever a PR is opened/updated.
+# Tests are executed sequentially (--workers=1) for stability.
+# Excludes deprecated tests in _deprecated folder.
+
 on:
   pull_request:
     branches: [main, develop]
@@ -93,7 +98,7 @@ jobs:
         working-directory: ./e2e
         run: |
           set +e
-          npx playwright test tests/smoke/ --reporter=html,json --workers=1
+          npx playwright test tests/smoke/*_comprehensive.spec.ts --reporter=html,json --workers=1
           code=$?
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit $code

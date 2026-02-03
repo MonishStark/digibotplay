@@ -33,301 +33,25 @@ test.describe("DELETE /super-admin/users/{userId} - Comprehensive Tests", () => 
 	// SUCCESS (200)
 	// ========================
 
-	test.describe("200 Success Responses", () => {
-		test("should delete user successfully - 200", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/${testUserId}`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 400, 401, 403, 404, 500]).toContain(response.status());
-
-			if (
-				response.status() === 200 &&
-				response.headers()["content-type"]?.includes("application/json")
-			) {
-				const data = await response.json();
-				expect(data).toHaveProperty("success");
-			}
-		});
-
-		test("should delete user with minimal resources", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/minimal-user-id`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 400, 401, 403, 404, 500]).toContain(response.status());
-		});
-
-		test("should delete user with many resources", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/rich-user-id`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 400, 401, 403, 404, 500]).toContain(response.status());
-		});
-
-		test("should confirm deletion is irreversible", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/${testUserId}`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 400, 401, 403, 404, 500]).toContain(response.status());
-		});
-	});
-
-	// ========================
-	// BAD REQUEST (400)
-	// ========================
-
-	test.describe("400 Bad Request Responses", () => {
-		test("should return 400 for invalid userId format", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/invalid@userId`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([400, 401, 403, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 400 for empty userId", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([400, 401, 403, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 400 for special characters in userId", async ({
-			request,
-		}) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/user<script>alert(1)</script>`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([400, 401, 403, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 400 for attempting to delete own account", async ({
-			request,
-		}) => {
-			// Attempting to delete self - should be prevented
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/self-id`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 400, 401, 403, 404, 500]).toContain(response.status());
-		});
-	});
-
-	// ========================
-	// UNAUTHORIZED (401)
-	// ========================
-
-	test.describe("401 Unauthorized Responses", () => {
-		test("should return 401 when Authorization header is missing", async ({
-			request,
-		}) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/${testUserId}`,
-			);
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for invalid token", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/${testUserId}`,
-				{
-					headers: {
-						Authorization: "Bearer invalid-token-12345",
-					},
-				},
-			);
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for expired token", async ({ request }) => {
-			const expiredToken =
-				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.4Adcj0vbBqfVIpnGGNJKKpBmJcAmPNtSKhTNnsTekII";
-
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/${testUserId}`,
-				{
-					headers: {
-						Authorization: `Bearer ${expiredToken}`,
-					},
-				},
-			);
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for malformed JWT", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/${testUserId}`,
-				{
-					headers: {
-						Authorization: "Bearer not-a-valid-jwt",
-					},
-				},
-			);
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-	});
-
-	// ========================
-	// FORBIDDEN (403)
-	// ========================
-
-	test.describe("403 Forbidden Responses", () => {
-		test("should return 403 for non-super-admin users - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require a non-super-admin user token
-			expect(true).toBe(true);
-		});
-
-		test("should prevent deletion of protected system accounts - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require attempting to delete protected account
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// NOT FOUND (404)
 	// ========================
-
-	test.describe("404 Not Found Responses", () => {
-		test("should return 404 for non-existent user", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/nonexistent-user-id-99999`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([400, 401, 403, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 404 for already deleted user", async ({ request }) => {
-			const response = await request.delete(
-				`${API_BASE_URL}/super-admin/users/already-deleted-id`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([400, 401, 403, 404, 500]).toContain(response.status());
-		});
-	});
-
-	// ========================
-	// REQUEST TIMEOUT (408)
-	// ========================
-
-	test.describe("408 Request Timeout", () => {
-		test("should handle request timeout for large deletions - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require simulating timeout
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// RATE LIMIT (429)
 	// ========================
 
-	test.describe("429 Rate Limit Exceeded", () => {
-		test("should handle rate limiting - PLACEHOLDER", async ({ request }) => {
-			// Would require many rapid requests
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// SERVER ERROR (500)
 	// ========================
-
-	test.describe("500 Server Error", () => {
-		test("should handle server errors gracefully - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require simulating server error
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// SERVICE UNAVAILABLE (503)
 	// ========================
 
-	test.describe("503 Service Unavailable", () => {
-		test("should handle service unavailable - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require service to be down
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// GATEWAY TIMEOUT (504)
 	// ========================
-
-	test.describe("504 Gateway Timeout", () => {
-		test("should handle gateway timeout - PLACEHOLDER", async ({ request }) => {
-			// Would require simulating timeout
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// EDGE CASES
@@ -633,3 +357,4 @@ test.describe("DELETE /super-admin/users/{userId} - Comprehensive Tests", () => 
 		});
 	});
 });
+

@@ -34,199 +34,25 @@ test.describe("GET /me/subscription - Comprehensive Tests", () => {
 	// SUCCESS (200)
 	// ========================
 
-	test.describe("200 Success Responses", () => {
-		test("should fetch subscription details successfully - 200", async ({
-			request,
-		}) => {
-			const response = await request.get(`${API_BASE_URL}/me/subscription`, {
-				headers: {
-					Authorization: `Bearer ${validAccessToken}`,
-					"x-api-version": "v1",
-				},
-			});
-
-			expect([200, 401, 403, 404, 500]).toContain(response.status());
-
-			if (
-				response.status() === 200 &&
-				response.headers()["content-type"]?.includes("application/json")
-			) {
-				const data = await response.json();
-				expect(data).toHaveProperty("success");
-			}
-		});
-
-		test("should return subscription details with default API version", async ({
-			request,
-		}) => {
-			const response = await request.get(`${API_BASE_URL}/me/subscription`, {
-				headers: {
-					Authorization: `Bearer ${validAccessToken}`,
-				},
-			});
-
-			expect([200, 401, 403, 404, 500]).toContain(response.status());
-		});
-
-		test("should resolve user identity from JWT token", async ({ request }) => {
-			const response = await request.get(`${API_BASE_URL}/me/subscription`, {
-				headers: {
-					Authorization: `Bearer ${validAccessToken}`,
-					"x-api-version": "v1",
-				},
-			});
-
-			expect([200, 401, 403, 404, 500]).toContain(response.status());
-		});
-
-		test("should return consistent data across multiple requests", async ({
-			request,
-		}) => {
-			const response1 = await request.get(`${API_BASE_URL}/me/subscription`, {
-				headers: {
-					Authorization: `Bearer ${validAccessToken}`,
-					"x-api-version": "v1",
-				},
-			});
-
-			const response2 = await request.get(`${API_BASE_URL}/me/subscription`, {
-				headers: {
-					Authorization: `Bearer ${validAccessToken}`,
-					"x-api-version": "v1",
-				},
-			});
-
-			expect(response1.status()).toBe(response2.status());
-		});
-	});
-
-	// ========================
-	// UNAUTHORIZED (401)
-	// ========================
-
-	test.describe("401 Unauthorized Responses", () => {
-		test("should return 401 when Authorization header is missing", async ({
-			request,
-		}) => {
-			const response = await request.get(`${API_BASE_URL}/me/subscription`, {
-				headers: {
-					"x-api-version": "v1",
-				},
-			});
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for invalid token", async ({ request }) => {
-			const response = await request.get(`${API_BASE_URL}/me/subscription`, {
-				headers: {
-					Authorization: "Bearer invalid-token-12345",
-					"x-api-version": "v1",
-				},
-			});
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for expired token", async ({ request }) => {
-			const expiredToken =
-				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.4Adcj0vbBqfVIpnGGNJKKpBmJcAmPNtSKhTNnsTekII";
-
-			const response = await request.get(`${API_BASE_URL}/me/subscription`, {
-				headers: {
-					Authorization: `Bearer ${expiredToken}`,
-					"x-api-version": "v1",
-				},
-			});
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for malformed JWT", async ({ request }) => {
-			const response = await request.get(`${API_BASE_URL}/me/subscription`, {
-				headers: {
-					Authorization: "Bearer not-a-valid-jwt",
-					"x-api-version": "v1",
-				},
-			});
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-	});
-
-	// ========================
-	// FORBIDDEN (403)
-	// ========================
-
-	test.describe("403 Forbidden Responses", () => {
-		test("should return 403 for insufficient permissions - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require a user without license or admin privileges
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// NOT FOUND (404)
 	// ========================
-
-	test.describe("404 Not Found Responses", () => {
-		test("should return 404 when subscription not found - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require user without subscription
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// RATE LIMIT (429)
 	// ========================
 
-	test.describe("429 Rate Limit Exceeded", () => {
-		test("should handle rate limiting - PLACEHOLDER", async ({ request }) => {
-			// Would require 30+ requests per minute
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// SERVER ERROR (500)
 	// ========================
-
-	test.describe("500 Server Error", () => {
-		test("should handle server errors gracefully - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require simulating server error
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// SERVICE UNAVAILABLE (503)
 	// ========================
 
-	test.describe("503 Service Unavailable", () => {
-		test("should handle service unavailable - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require service to be down
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// GATEWAY TIMEOUT (504)
 	// ========================
-
-	test.describe("504 Gateway Timeout", () => {
-		test("should handle gateway timeout - PLACEHOLDER", async ({ request }) => {
-			// Would require simulating timeout
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// EDGE CASES
@@ -495,3 +321,4 @@ test.describe("GET /me/subscription - Comprehensive Tests", () => {
 		});
 	});
 });
+

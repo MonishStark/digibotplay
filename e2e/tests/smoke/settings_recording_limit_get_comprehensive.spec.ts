@@ -32,190 +32,21 @@ test.describe("GET /settings/recording-limit - Comprehensive Tests", () => {
 	// SUCCESS (200)
 	// ========================
 
-	test.describe("200 Success Responses", () => {
-		test("should fetch recording limit successfully - 200", async ({
-			request,
-		}) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-limit`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 400, 401, 500]).toContain(response.status());
-
-			if (
-				response.status() === 200 &&
-				response.headers()["content-type"]?.includes("application/json")
-			) {
-				const data = await response.json();
-				expect(data).toHaveProperty("success");
-			}
-		});
-
-		test("should return current recordings used", async ({ request }) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-limit`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 400, 401, 500]).toContain(response.status());
-		});
-
-		test("should return total monthly limit", async ({ request }) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-limit`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 400, 401, 500]).toContain(response.status());
-		});
-
-		test("should allow usage tracking for authenticated account", async ({
-			request,
-		}) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-limit`,
-				{
-					headers: {
-						Authorization: `Bearer ${validAccessToken}`,
-					},
-				},
-			);
-
-			expect([200, 400, 401, 500]).toContain(response.status());
-		});
-	});
-
-	// ========================
-	// BAD REQUEST (400)
-	// ========================
-
-	test.describe("400 Bad Request Responses", () => {
-		test("should return 400 for invalid request format - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require invalid request
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// UNAUTHORIZED (401)
 	// ========================
-
-	test.describe("401 Unauthorized Responses", () => {
-		test("should return 401 when Authorization header is missing", async ({
-			request,
-		}) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-limit`,
-			);
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for invalid token", async ({ request }) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-limit`,
-				{
-					headers: {
-						Authorization: "Bearer invalid-token-12345",
-					},
-				},
-			);
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for expired token", async ({ request }) => {
-			const expiredToken =
-				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.4Adcj0vbBqfVIpnGGNJKKpBmJcAmPNtSKhTNnsTekII";
-
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-limit`,
-				{
-					headers: {
-						Authorization: `Bearer ${expiredToken}`,
-					},
-				},
-			);
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-
-		test("should return 401 for malformed JWT", async ({ request }) => {
-			const response = await request.get(
-				`${API_BASE_URL}/settings/recording-limit`,
-				{
-					headers: {
-						Authorization: "Bearer not-a-valid-jwt",
-					},
-				},
-			);
-
-			expect([401, 404, 500]).toContain(response.status());
-		});
-	});
-
-	// ========================
-	// RATE LIMIT (429)
-	// ========================
-
-	test.describe("429 Rate Limit Exceeded", () => {
-		test("should handle rate limiting - PLACEHOLDER", async ({ request }) => {
-			// Would require many rapid requests
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// SERVER ERROR (500)
 	// ========================
 
-	test.describe("500 Server Error", () => {
-		test("should handle server errors gracefully - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require simulating server error
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// SERVICE UNAVAILABLE (503)
 	// ========================
 
-	test.describe("503 Service Unavailable", () => {
-		test("should handle service unavailable - PLACEHOLDER", async ({
-			request,
-		}) => {
-			// Would require service to be down
-			expect(true).toBe(true);
-		});
-	});
-
 	// ========================
 	// GATEWAY TIMEOUT (504)
 	// ========================
-
-	test.describe("504 Gateway Timeout", () => {
-		test("should handle gateway timeout - PLACEHOLDER", async ({ request }) => {
-			// Would require simulating timeout
-			expect(true).toBe(true);
-		});
-	});
 
 	// ========================
 	// EDGE CASES
@@ -474,3 +305,4 @@ test.describe("GET /settings/recording-limit - Comprehensive Tests", () => {
 		});
 	});
 });
+

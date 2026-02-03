@@ -1,6 +1,6 @@
 /**
- * Test data extracted from database snapshots (2026-02-01)
- * All user passwords: Qwerty@123
+ * Test data extracted from database snapshots (2026-02-02)
+ * All user passwords: Test@1234
  *
  * @format
  */
@@ -9,39 +9,39 @@ export const testData = {
 	// Users
 	users: {
 		admin1: {
-			id: 69,
-			username: "qwe",
-			firstname: "TestFirstname",
-			lastname: "qwe",
-			email: "social.sloth.nwmz@protectsmail.net",
+			id: 1000,
+			username: "admin1",
+			firstname: "Admin",
+			lastname: "One",
+			email: "admin1@test.com",
 			phone: "+1",
-			phoneNumber: "invalid-not-a-number",
-			password: "Qwerty@123",
-			companyId: 45,
+			phoneNumber: "1234567890",
+			password: "Test@1234",
+			companyId: 100,
 			role: 1, // Admin role
 		},
 		admin2: {
-			id: 70,
-			username: "rere",
-			firstname: "rerere",
-			lastname: "rere",
-			email: "social.sloth.iwmz@protectsmail.net",
+			id: 1001,
+			username: "admin2",
+			firstname: "Admin",
+			lastname: "Two",
+			email: "admin2@test.com",
 			phone: "+1",
-			phoneNumber: "(131) 231-2313",
-			password: "Qwerty@123",
-			companyId: 46,
+			phoneNumber: "1234567891",
+			password: "Test@1234",
+			companyId: 101,
 			role: 1,
 		},
 		superAdmin: {
-			id: 71,
-			username: "dsdsd",
-			firstname: "dsdsd",
-			lastname: "dsdsd",
-			email: "poised.reindeer.muxl@protectsmail.net",
+			id: 1002,
+			username: "superadmin",
+			firstname: "Super",
+			lastname: "Admin",
+			email: "superadmin@test.com",
 			phone: "+1",
-			phoneNumber: "(432) 423-4234",
-			password: "Qwerty@123",
-			companyId: 47,
+			phoneNumber: "1234567892",
+			password: "Test@1234",
+			companyId: 100,
 			role: 4, // Super admin role
 		},
 	},
@@ -49,16 +49,16 @@ export const testData = {
 	// Companies
 	companies: {
 		company1: {
-			id: 45,
-			adminId: 69,
+			id: 100,
+			adminId: 1000,
 		},
 		company2: {
-			id: 46,
-			adminId: 70,
+			id: 101,
+			adminId: 1001,
 		},
 		company3: {
-			id: 47,
-			adminId: 71,
+			id: 100,
+			adminId: 1002,
 		},
 	},
 
@@ -66,24 +66,24 @@ export const testData = {
 	teams: {
 		team1: {
 			id: 21,
-			companyId: 45,
-			creatorId: 69,
+			companyId: 100,
+			creatorId: 1000,
 			teamName: "acc1team1",
 			teamAlias: "12345",
 			uuid: "1361f287-adf9-520b-a643-d4465003526d",
 		},
 		team2: {
 			id: 22,
-			companyId: 46,
-			creatorId: 70,
+			companyId: 101,
+			creatorId: 1001,
 			teamName: "acc2team1",
 			teamAlias: "54321",
 			uuid: "70266725-903e-3101-85b4-74e572d97fd8",
 		},
 		team3: {
 			id: 23,
-			companyId: 47,
-			creatorId: 71,
+			companyId: 100,
+			creatorId: 1002,
 			teamName: "admin1team1",
 			teamAlias: "0909",
 			uuid: "78e98fe9-33ea-56bf-88c0-c08ebc68a617",
@@ -106,7 +106,7 @@ export const testData = {
 			teamId: 21,
 			name: "Notes",
 			type: "folder",
-			creatorId: 69,
+			creatorId: 1000,
 		},
 		acc1folder1: {
 			id: 352,
@@ -114,7 +114,7 @@ export const testData = {
 			teamId: 21,
 			name: "acc1folder1",
 			type: "folder",
-			creatorId: 69,
+			creatorId: 1000,
 		},
 		chatgptPdf: {
 			id: 353,
@@ -123,7 +123,7 @@ export const testData = {
 			name: "Chatgpt.pdf",
 			size: 23.44, // kb
 			type: "file",
-			creatorId: 69,
+			creatorId: 1000,
 			source: "Local uploads",
 		},
 		notesFolder2: {
@@ -132,7 +132,7 @@ export const testData = {
 			teamId: 22,
 			name: "Notes",
 			type: "folder",
-			creatorId: 70,
+			creatorId: 1001,
 		},
 		acc2folder1: {
 			id: 355,
@@ -140,7 +140,7 @@ export const testData = {
 			teamId: 22,
 			name: "acc2folder1",
 			type: "folder",
-			creatorId: 70,
+			creatorId: 1001,
 		},
 		notesFolder3: {
 			id: 356,
@@ -148,7 +148,7 @@ export const testData = {
 			teamId: 23,
 			name: "Notes",
 			type: "folder",
-			creatorId: 71,
+			creatorId: 1002,
 		},
 		adminfolder1: {
 			id: 357,
@@ -156,7 +156,7 @@ export const testData = {
 			teamId: 23,
 			name: "adminfolder1",
 			type: "folder",
-			creatorId: 71,
+			creatorId: 1002,
 		},
 	},
 
@@ -164,7 +164,7 @@ export const testData = {
 	chats: {
 		chat1: {
 			id: 31,
-			userId: 69,
+			userId: 1000,
 			teamId: 21,
 			name: "summary of it",
 			scopeId: 1,
@@ -193,7 +193,7 @@ export const testData = {
 	notifications: {
 		notification1: {
 			id: 4,
-			userId: 69,
+			userId: 1000,
 			message: "successfull",
 			title: "Chatgpt.pdf (23.44kb)",
 			objectId: 353,
