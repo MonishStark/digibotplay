@@ -79,7 +79,7 @@ jobs:
           echo "✅ Redis is ready"
 
           echo "⏳ Waiting for Backend to be ready..."
-          timeout 180 bash -c 'until curl -f http://localhost:5050/health &>/dev/null; do sleep 3; done'
+          timeout 180 bash -c 'until curl -f http://localhost:5050/settings/recording-prompt-time &>/dev/null; do sleep 3; done'
           echo "✅ Backend is ready"
 
       - name: Verify Database Setup
