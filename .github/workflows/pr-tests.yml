@@ -38,6 +38,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            e2e/package-lock.json
 
       # =======================
       # START DOCKER SERVICES
