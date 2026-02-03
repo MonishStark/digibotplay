@@ -53,6 +53,7 @@ jobs:
           BIGQUERY_MAX_OUTPUT_TOKEN=${{ secrets.BIGQUERY_MAX_OUTPUT_TOKEN }}
           BIGQUERY_LOCATION=${{ secrets.BIGQUERY_LOCATION }}
           UUID_NAMESPACE=${{ secrets.UUID_NAMESPACE }}
+          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY || 'sk_test_ci_dummy' }}
           EOF
 
       - name: Start Docker Services (MySQL + Redis + Backend)
